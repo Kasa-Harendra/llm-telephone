@@ -1,8 +1,8 @@
 import os
 
 ROTATING_MODELS = [
-    "google/gemini-2.0-flash", # fast & cheap
-    "anthropic/claude-4-sonnet", # good at paraphrasing
+    "google/gemini-2.0-flash-001", # fast & cheap
+    "anthropic/claude-sonnet-4", # good at paraphrasing
 ]
 
 JUDGE_MODEL = "openai/gpt-4o-mini" # reserved for scoring only

@@ -1,4 +1,6 @@
-import argparse, textwrap
+import argparse
+import textwrap
+
 from llm_tel.engine import cycle
 from llm_tel.persistence import mk_exp_dir, Recorder
 

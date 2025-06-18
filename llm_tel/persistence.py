@@ -1,4 +1,8 @@
-import csv, json, pathlib, datetime as dt, traceback
+import csv
+import json
+import pathlib
+import datetime as dt
+import traceback
 
 def mk_exp_dir(seed: str) -> pathlib.Path:
     slug = "_".join(seed.lower().split()[:3])
@@ -23,6 +27,7 @@ class Recorder:
             if exc_tb is not None:
                 print("Traceback:")
                 traceback.print_tb(exc_tb)
+
         self.csv.close()
         self.jl.close()
 

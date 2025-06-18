@@ -1,4 +1,3 @@
-from typing import Iterable
 import itertools
 from llm_tel.client import chat
 from llm_tel.judge import score
