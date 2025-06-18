@@ -1,19 +1,16 @@
 from __future__ import annotations
-import os, functools, logging, backoff
+
+import backoff
+
 from openai import OpenAI, OpenAIError
 
-_API_BASE = "https://openrouter.ai/api/v1"
-_HEADERS  = {
-    # openrouter requires these two extra headers
-    "HTTP-Referer": "https://github.com/smusali/llm-telephone",
-    "X-Title": "LLM Telephone (dev)",
-}
+from llm_tel.config import OPENROUTER_API_KEY, OPENROUTER_API_BASE, OPENROUTER_HEADERS
 
 def _client() -> OpenAI:
     return OpenAI(
-        api_key=os.environ["OPENROUTER_API_KEY"],
-        base_url=_API_BASE,
-        default_headers=_HEADERS,
+        api_key=OPENROUTER_API_KEY,
+        base_url=OPENROUTER_API_BASE,
+        default_headers=OPENROUTER_HEADERS,
         timeout=30,
     )
 
@@ -27,6 +24,6 @@ def _retryable(func):
     )(func)
 
 @_retryable
-def chat(model: str, messages: list[dict[str, str]]) -> str:
-    resp = _client().chat.completions.create(model=model, messages=messages)
+def chat(model: str, messages: list[dict[str, str]], temperature: float = 1.0) -> str:
+    resp = _client().chat.completions.create(model=model, messages=messages, temperature=temperature)
     return resp.choices[0].message.content.strip()

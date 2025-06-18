@@ -10,7 +10,7 @@ def main(argv: list[str] | None = None) -> None:
     with Recorder(exp_dir) as r:
         cycle(args.start, recorder=r)
 
-    print(textwrap.dedent(f"Degradation complete – results saved to {exp_dir}").strip())
+    print(textwrap.dedent(f"Degradation complete: results saved to {exp_dir}").strip())
 
 if __name__ == "__main__":
     main()
