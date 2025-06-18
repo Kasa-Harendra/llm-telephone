@@ -1,25 +1,37 @@
 from __future__ import annotations
 
 import backoff
+import httpx
 
 from openai import OpenAI, OpenAIError
 
 from llm_tel.config import OPENROUTER_API_KEY, OPENROUTER_API_BASE, OPENROUTER_HEADERS
 
 def _client() -> OpenAI:
+    # Create httpx client with strict timeout settings
+    http_client = httpx.Client(
+        timeout=httpx.Timeout(
+            connect=5.0,
+            read=10.0,
+            write=10.0,
+            pool=10.0
+        )
+    )
+    
     return OpenAI(
         api_key=OPENROUTER_API_KEY,
         base_url=OPENROUTER_API_BASE,
         default_headers=OPENROUTER_HEADERS,
-        timeout=30,
+        http_client=http_client,
     )
 
 def _retryable(func):
     """Exponential back-off on rate limits & 5xx."""
     return backoff.on_exception(
         backoff.expo,
-        (OpenAIError,),
-        max_tries=5,
+        (OpenAIError, httpx.TimeoutException, httpx.ConnectError),
+        max_tries=3,
+        max_time=30,
         jitter=None,
     )(func)
 

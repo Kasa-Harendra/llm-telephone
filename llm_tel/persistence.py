@@ -33,5 +33,6 @@ class Recorder:
 
     def log(self, **row):
         self.w.writerow(row)
+        self.csv.flush()  # Flush CSV to disk immediately
         self.jl.write(json.dumps(row) + "\n")
         self.jl.flush()
