@@ -17,7 +17,14 @@ def score(original: str, transformed: str, n: int = 1) -> float:
         reply = chat(JUDGE_MODEL, msgs, temperature=0)
         try:
             if reply.strip():  # Check if reply is not empty
-                scores.append(json.loads(reply)["score"])
+                # Strip markdown code blocks if present
+                clean_reply = reply.strip()
+                if clean_reply.startswith('```json') and clean_reply.endswith('```'):
+                    clean_reply = clean_reply[7:-3].strip()
+                elif clean_reply.startswith('```') and clean_reply.endswith('```'):
+                    clean_reply = clean_reply[3:-3].strip()
+                
+                scores.append(json.loads(clean_reply)["score"])
             else:
                 logging.warning("Judge returned empty response, using fallback score")
                 scores.append(1)  # Fallback score for empty response
