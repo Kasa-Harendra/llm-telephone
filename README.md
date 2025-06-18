@@ -1,11 +1,139 @@
-# llm-telephone
-LLM Telephone: Information Degradation Analysis
+# LLM Telephone 📞
 
-Run a quick experiment:
+A research tool that measures how technical information degrades when passed through a "telephone game" chain of different Large Language Models.
+
+## 🎯 What is LLM Telephone?
+
+LLM Telephone implements a digital version of the classic "telephone game" using multiple Large Language Models. It measures how technical information erodes when repeatedly transformed between **Answer → Question → Answer** cycles across different LLM providers.
+
+### The Process
+
+1. **Start** with a technical statement (e.g., "Redis uses single-threaded event loops with epoll for I/O multiplexing")
+2. **Transform** to question: "What question does this answer?"
+3. **Transform** back to answer: "What's the answer to this question?"
+4. **Repeat** until information degrades below threshold
+5. **Measure** semantic similarity at each step using LLM-as-a-Judge
+
+### Example Chain
+
+| Cycle | Phase | Content |
+|-------|-------|---------|
+| 0 | Seed | `Redis uses single-threaded event loops with epoll for I/O multiplexing` |
+| 1 | A→Q | `How does Redis achieve high concurrency without multiple threads?` |
+| 2 | Q→A | `Redis uses asynchronous I/O and an event-driven architecture` |
+| 3 | A→Q | `What techniques help Redis handle many connections efficiently?` |
+| ... | ... | *[degradation continues]* |
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.11+
+- OpenRouter API key ([Get one here](https://openrouter.ai/))
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/llm-telephone.git
+   cd llm-telephone
+   ```
+
+2. **Create virtual environment**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure API key**
+   Set your OpenRouter API key as an environment variable:
+   ```bash
+   export OPENROUTER_API_KEY="your-api-key-here"
+   ```
+
+### Basic Usage
+
 ```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+# Run a single experiment
+python telephone.py --start "Redis uses single-threaded event loops with epoll for I/O multiplexing"
 
-python telephone.py \
-  --start "Redis uses single-threaded event loops with epoll for I/O multiplexing"
+# Check results
+ls experiments/
+cat experiments/redis_uses_single-threaded_*/chain.csv
 ```
+
+## 📊 Output & Results
+
+Each experiment generates:
+
+- **Timestamped directory** in `experiments/`
+- **CSV file** (`chain.csv`) with structured data
+- **JSONL file** (`chain.jsonl`) with complete experiment logs
+
+### Sample Output
+
+```csv
+cycle,phase,model,text,score
+1,A→Q,google/gemini-2.0-flash-001,How does Redis handle concurrent requests?,8
+2,Q→A,anthropic/claude-sonnet-4,Redis uses asynchronous I/O operations,7
+3,A→Q,google/gemini-2.0-flash-001,What enables efficient I/O in databases?,5
+```
+
+## 🏗️ Architecture
+
+```
+llm-telephone/
+├── telephone.py         # 🎯 Main CLI entry point
+├── llm_tel/             # 📦 Core package
+│   ├── engine.py        # 🔄 Telephone game orchestration
+│   ├── client.py        # 🌐 OpenRouter API communication
+│   ├── judge.py         # ⚖️  LLM-as-a-Judge scoring
+│   ├── prompts.py       # 📝 Jinja2 template management
+│   ├── config.py        # ⚙️  System configuration
+│   └── persistence.py   # 💾 Data storage & experiments
+├── experiments/         # 📈 Generated experiment data
+└── requirements.txt     # 📋 Python dependencies
+```
+
+## ✨ Key Features
+
+- **🔄 Model Rotation**: Cycles through different LLM providers automatically
+- **⚖️ LLM-as-a-Judge**: GPT-4o-mini evaluates semantic similarity (1-10 scale)
+- **📊 Dual Storage**: Results saved in both CSV and JSONL formats
+- **🛡️ Error Resilience**: Exponential backoff, timeout handling, graceful degradation
+- **⏱️ Real-time Logging**: Immediate data persistence prevents loss
+- **🎯 Smart Termination**: Stops when degradation threshold reached or max cycles exceeded
+
+## 📚 Documentation
+
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development setup and contribution guidelines
+- **[IMPROVEMENTS.md](IMPROVEMENTS.md)** - Future enhancement roadmap
+- **[INSTRUCTIONS.md](INSTRUCTIONS.md)** - Original project specifications
+- **[LICENSE](LICENSE)** - MIT License details
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
+
+- Development environment setup
+- Code style guidelines
+- Testing procedures
+- Pull request process
+
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built for research into LLM behavior and information preservation
+- Uses [OpenRouter](https://openrouter.ai/) for unified LLM API access
+- Inspired by the classic "telephone game" concept
+
+---

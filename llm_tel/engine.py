@@ -4,6 +4,7 @@ from llm_tel.judge import score
 from llm_tel.prompts import A_TO_Q, Q_TO_A
 from llm_tel.config import ROTATING_MODELS, MAX_CYCLES, STOP_SCORE
 
+
 def cycle(seed: str, recorder) -> None:
     current = seed
     original = seed

@@ -7,6 +7,7 @@ from openai import OpenAI, OpenAIError
 
 from llm_tel.config import OPENROUTER_API_KEY, OPENROUTER_API_BASE, OPENROUTER_HEADERS
 
+
 def _client() -> OpenAI:
     # Create httpx client with strict timeout settings
     http_client = httpx.Client(
@@ -25,6 +26,7 @@ def _client() -> OpenAI:
         http_client=http_client,
     )
 
+
 def _retryable(func):
     """Exponential back-off on rate limits & 5xx."""
     return backoff.on_exception(
@@ -34,6 +36,7 @@ def _retryable(func):
         max_time=30,
         jitter=None,
     )(func)
+
 
 @_retryable
 def chat(model: str, messages: list[dict[str, str]], temperature: float = 1.0) -> str:

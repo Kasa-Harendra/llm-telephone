@@ -1,5 +1,6 @@
 from jinja2 import Template
 
+
 A_TO_Q = Template("""
 Given the following statement, formulate a concise technical question for which this
 statement is the direct and most appropriate answer.
