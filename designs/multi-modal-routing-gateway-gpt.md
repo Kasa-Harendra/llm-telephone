@@ -54,17 +54,17 @@ flowchart TB
   end
   N --> FSTRT(Fwd to<br>Router Shard)
   subgraph "Region-Local Zone"
-    FRT(Router Service) -->|features| FS[(Real-Time<br>Feature Store)]
+    FRT(Router Service) -->|features| FS[Real-Time Feature Store]
     FRT -->|candidate set| SEE(Speculative Exec Mgr)
     SEE -->|async| CONN[Model Connectors Pool]
     CONN -->|responses| ARB{Arbitrator<br/>(QoS dial)}
-    ARB --> CACHE[Warm Resp Cache (Redis Co-Located)]
+    ARB --> CACHE[Warm Resp Cache Redis Co-Located]
     ARB --> MON[Metrics/Spans]
     CACHE --hit--> RESP[Return Best Answer]
     ARB --miss--> RESP
   end
   FS <-- INGESTION[Streaming<br>Metrics Ingest]
-  MON --> OBS[Observability Stack<br>(OTel ➜ ClickHouse/Grafana)]
+  MON --> OBS[Observability Stack OTel to ClickHouse and Grafana]
   RESP --> A1
 ```
 

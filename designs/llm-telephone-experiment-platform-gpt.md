@@ -39,7 +39,7 @@ flowchart TB
 
   RQ --> PAR[Parquet Writer]
   PAR --> S3[S3 / Object Store]
-  S3 --> CH[ClickHouse Cluster<br/>(analytics)]
+  S3 --> CH[ClickHouse Cluster analytics]
   CH --> API[GraphQL and REST API]
   API --> FE[React Dashboard]
 

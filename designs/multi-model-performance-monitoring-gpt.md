@@ -31,8 +31,8 @@ flowchart TB
 
   subgraph "Stream Proc Cluster"
     KAFKA --> FENRIR[Fluvio/Flink<br/>window agg]
-    FENRIR --> FEAT[(Features KV<br/>Redis Cluster)]
-    FENRIR --> CH[(ClickHouse<br/>Hot OLAP)]
+    FENRIR --> FEAT[Features KV Redis Cluster]
+    FENRIR --> CH[ClickHouse Hot OLAP]
   end
 
   FEAT --> RANK

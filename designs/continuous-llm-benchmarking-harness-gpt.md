@@ -38,12 +38,12 @@ flowchart TB
     DS(Dataset Registry) -.-> PQ
   end
   PQ --> SCHD(Eval Scheduler + Planner)
-  SCHD --> Q[Redis Streams (eval_jobs)]
+  SCHD --> Q[Redis Streams eval_jobs]
   I(Scheduler Metrics) -.-> M[Prom/OTel]
 
   subgraph "k8s Cluster"
-    Q --> W1[CPU Workers<br>(lightweight tasks)]
-    Q --> W2[GPU Workers<br>(heavy tasks)]
+    Q --> W1[CPU Workers lightweight tasks]
+    Q --> W2[GPU Workers heavy tasks]
     W1 -.-> RS[Result Sink]
     W2 -.-> RS
   end
@@ -53,7 +53,7 @@ flowchart TB
     JDG --> RS
   end
 
-  RS --> CH[(ClickHouse Cluster)]
+  RS --> CH[ClickHouse Cluster]
   CH --> API(Leaderboard API Gateway)
   API --> FE[Dashboard SPA]
 

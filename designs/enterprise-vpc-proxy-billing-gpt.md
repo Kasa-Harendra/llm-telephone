@@ -7,20 +7,20 @@
 ```mermaid
 flowchart TB
   subgraph "Customer VPC (multi-AZ)"
-    LB[(AWS/NLB<br/>and TLS termination)]
+    LB[AWS NLB and TLS termination]
     LB --> ENVOY[Envoy Gateway<br/>(mTLS ↔ clients)]
     ENVOY --> AUTHZ[AuthN / AuthZ<br/>(OPA + JWKS)]
-    AUTHZ --> RL[Rate-Limit Service<br/>(Redis and Envoy filters)]
+    AUTHZ --> RL[Rate-Limit Service Redis and Envoy filters]
     RL --> TOK[Tokenizer / Meter]
-    TOK --> ROUTER[LLM Router<br/>(policy, routing)]
-    ROUTER --> EGR[eBPF NAT<br/>(egress subnet)]
+    TOK --> ROUTER[LLM Router policy and routing]
+    ROUTER --> EGR[eBPF NAT egress subnet]
   end
 
   EGR -- TLS --> VENDOR[External LLM Providers]
 
   subgraph "Metering Pipeline"
     TOK -- gRPC --> AGG[Usage Aggregator]
-    AGG --> S3[S3 (Staging Parquet)]
+    AGG --> S3[S3 Staging Parquet]
     S3 --> SNS((SNS))
     SNS --> SaaS[Not Diamond Billing API]
   end
