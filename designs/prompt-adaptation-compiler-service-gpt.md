@@ -33,7 +33,7 @@
 
 ```mermaid
 flowchart TB
-  subgraph Edge POPs
+  subgraph "Edge POPs"
     GW(API Gateway) --> ND(Normalizer & Auth)
   end
   ND --> RTE(Router: “needs adaptation?”)
@@ -47,7 +47,7 @@ flowchart TB
   METRICS --> OBS[OTel → ClickHouse + Grafana]
   CPL -. async .-> CTL(Control Plane & DSL Registry S3)
   CTL --> CPL
-````
+```
 
 *Solid = sync path, dashed = async/control.*
 

@@ -1,6 +1,6 @@
 # Multi-Modal Routing Gateway: System Design
 
-## 🎯 Problem Statement
+## Problem Statement
 
 Design a globally distributed gateway that accepts text, code-generation, vision, and audio prompts, then selects and calls the "best" model among dozens of third-party LLM/LVM endpoints under a configurable latency ↔ cost ↔ quality objective. The system must:
 
@@ -11,7 +11,7 @@ Design a globally distributed gateway that accepts text, code-generation, vision
 - **Objectives**: Configurable latency/cost/quality trade-offs
 - **Reliability**: Robust fallback behavior and observability
 
-## 🔍 Requirements Analysis
+## Requirements Analysis
 
 ### Functional Requirements
 - Multi-modal input processing (text, code, vision, audio)
@@ -29,7 +29,7 @@ Design a globally distributed gateway that accepts text, code-generation, vision
 - **Cost**: Optimize for cost efficiency
 - **Accuracy**: Maintain quality standards
 
-## 🏗️ Architecture Evolution
+## Architecture Evolution
 
 ### Phase 1: Basic Single-Region Architecture
 
@@ -260,7 +260,7 @@ graph TB
 - **Fallback Chain**: Automatic failover to backup providers
 - **Distributed Tracing**: End-to-end request tracking
 
-## 🧠 Decision Engine Architecture
+## Decision Engine Architecture
 
 ### Core Components
 
@@ -339,7 +339,7 @@ def select_model(request, objectives):
     return primary, speculative
 ```
 
-## 🔄 Speculative Execution Strategy
+## Speculative Execution Strategy
 
 ### Confidence-Based Execution
 
@@ -387,7 +387,7 @@ graph TB
 - **Latency**: May increase if waiting for all results
 - **Complexity**: More complex result selection logic
 
-## 🗄️ Data Storage & Caching Strategy
+## Data Storage & Caching Strategy
 
 ### Multi-Layer Caching Architecture
 
@@ -432,7 +432,7 @@ graph TB
 - Configuration changes
 - User preference updates
 
-## 🔧 API Design
+## API Design
 
 ### Request Contract
 
@@ -494,7 +494,7 @@ graph TB
 }
 ```
 
-## 📊 Observability & SLOs
+## Observability & SLOs
 
 ### SLO Framework
 
@@ -559,7 +559,7 @@ graph TB
 - Cache performance
 - Resource utilization
 
-## 🚀 Scaling Strategy
+## Scaling Strategy
 
 ### Horizontal Scaling
 
@@ -629,7 +629,7 @@ graph TB
 - Enables user-specific optimizations
 - Improves cache locality
 
-## 🔄 Fallback Behavior
+## Fallback Behavior
 
 ### Multi-Level Fallback Strategy
 
@@ -678,7 +678,7 @@ graph TB
 3. Alternative model (different provider)
 4. Fallback model (reliable but basic)
 
-## 💰 Cost Optimization
+## Cost Optimization
 
 ### Cost Management Strategy
 
@@ -717,7 +717,7 @@ graph TB
 - **Result caching**: Cache expensive computations
 - **Provider selection**: Choose cost-effective providers
 
-## 🔒 Security & Compliance
+## Security & Compliance
 
 ### Security Architecture
 
@@ -755,7 +755,7 @@ graph TB
 - **Encryption**: Encrypt data in transit and at rest
 - **Audit logging**: Comprehensive security logging
 
-## 🎯 Follow-up Questions & Answers
+## Follow-up Questions & Answers
 
 ### Q1: How do you handle model provider rate limits?
 
@@ -807,7 +807,7 @@ graph TB
 4. **Version management**: Handle API version changes
 5. **Testing framework**: Validate adapter correctness
 
-## 🏁 Conclusion
+## Conclusion
 
 This multi-modal routing gateway design provides:
 

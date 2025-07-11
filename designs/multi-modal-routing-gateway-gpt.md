@@ -49,11 +49,11 @@
 
 ```mermaid
 flowchart TB
-  subgraph Edge POPs (Anycast)
+  subgraph "Edge POPs (Anycast)"
     A1(API Gateway + Auth) -->|JSON/Proto| N[Normalizer & Modal Detector]
   end
   N --> FSTRT(Fwd to<br>Router Shard)
-  subgraph Region-Local Zone
+  subgraph "Region-Local Zone"
     FRT(Router Service) -->|features| FS[(Real-Time<br>Feature Store)]
     FRT -->|candidate set| SEE(Speculative Exec Mgr)
     SEE -->|async| CONN[Model Connectors Pool]
@@ -66,7 +66,7 @@ flowchart TB
   FS <-- INGESTION[Streaming<br>Metrics Ingest]
   MON --> OBS[Observability Stack<br>(OTel ➜ ClickHouse/Grafana)]
   RESP --> A1
-````
+```
 
 *Legend*: solid line = sync; dashed = async.
 
