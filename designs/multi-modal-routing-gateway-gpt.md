@@ -4,7 +4,7 @@
 
 ---
 
-## 0 . Requirements & Invariants
+## Requirements and Invariants
 
 | Axis | Hard Constraint | Rationale |
 |------|-----------------|-----------|
@@ -18,18 +18,18 @@
 
 ---
 
-## 1 . Evolution From Zero → Production
+## Evolution From Zero to Production
 
-### 1.1 “Whiteboard v0” — Single-Region Pilot
+### Whiteboard v0 — Single-Region Pilot
 
 *Pros:* fastest learning loop, no global complexity.  
 *Cons:* cold-start latency for non-US users; single-point failure.
 
-### 1.2 “MVP v1” — Multi-Region Active/Passive + CDN Edge Auth
+### MVP v1 — Multi-Region Active/Passive and CDN Edge Auth
 
 *Add:* secondary region hot-standby, CloudFront/Cloudflare edge for auth+rate-limit.
 
-### 1.3 “Prod v2” — *Global Active/Active*, Online ML Router, QoS Dial
+### Prod v2 — Global Active/Active, Online ML Router, QoS Dial
 
 *Add:*  
 * Global PoPs with **Anycast** + request-coalescing.  
@@ -37,7 +37,7 @@
 * **Speculative-Execution Executor** (SEE): parallel fire-and-race within latency budget.  
 * **Warm Response Cache** keyed by `(promptHash, top-k-models)`.
 
-### 1.4 “Enterprise v3” — BYO-VPC Proxy & Private Model Mesh
+### Enterprise v3 — BYO-VPC Proxy and Private Model Mesh
 
 *Add:*  
 * Helm-installable proxy that re-uses the same Router via gRPC.  
@@ -45,12 +45,12 @@
 
 ---
 
-## 2 . High-Level Architecture (Prod v2)
+## High-Level Architecture
 
 ```mermaid
 flowchart TB
   subgraph "Edge POPs (Anycast)"
-    A1(API Gateway + Auth) -->|JSON/Proto| N[Normalizer & Modal Detector]
+    A1(API Gateway + Auth) -->|JSON/Proto| N[Normalizer and Modal Detector]
   end
   N --> FSTRT(Fwd to<br>Router Shard)
   subgraph "Region-Local Zone"
@@ -72,15 +72,15 @@ flowchart TB
 
 ---
 
-## 3 . Component Deep-Dive
+## Component Deep-Dive
 
-### 3.1 Edge API Gateway
+### Edge API Gateway
 
 * **Anycast IP** routes to nearest POP (≤ 20 ms RTT for 95 % world).
 * **JWT / HMAC Key** auth & **rate-limit** in-edge (blocks bad traffic earlier).
 * **Protocol**: HTTP/2 + gRPC; `multipart/form-data` for large images/audio.
 
-### 3.2 Normalizer & Modal Detector
+### Normalizer and Modal Detector
 
 * Detects modality via MIME or fast heuristic (magic bytes / FFT for audio).
 * Outputs canonical JSON:
@@ -95,14 +95,14 @@ flowchart TB
 }
 ```
 
-### 3.3 Router Service (stateless shards)
+### Router Service (stateless shards)
 
 * **Feature Vector** = concat(user-provided metadata, embedding of prompt, past hit ratios, cost curves).
 * **Model**: GBDT (CatBoost) for *fast* candidate ranking → pass top-k (≤ 3) to small **MLP** re-ranker trained on pairwise win-rate.
 * Online inference ≤ 5 ms in-memory.
 * **Cold-start**: heuristics (e.g., prefer GPT-4o for code if budget OK).
 
-### 3.4 Real-Time Feature Store (RTFS)
+### Real-Time Feature Store (RTFS)
 
 * Write-Optimized **Kafka→ClickHouse→Redis** cascade.
 
@@ -110,19 +110,19 @@ flowchart TB
   * Materialized-view in ClickHouse for long-range analytics.
   * Latest slice (< 1 min) KV-mirrored to Redis-Cluster for sub-millisecond read in router.
 
-### 3.5 Speculative Execution Mgr (SEE)
+### Speculative Execution Mgr (SEE)
 
 * Launches **parallel** calls to top-k candidates BUT with staggered delays (`Δ = p50_latency(candidate_i−1)`).
 * Cancels slower stragglers when a high-confidence answer returns.
 * **Budget Enforcement**: if cumulative wait exceeds user requested `latency_budget`, abort remaining.
 
-### 3.6 Model Connectors Pool
+### Model Connectors Pool
 
 * Each connector = *Circuit-Breaker + Retry-Budget + QoS tags*.
 * Pool is **modal-aware** (e.g., GPU vs CPU endpoints).
 * **Throttling** by cost cap & tenant budget.
 
-### 3.7 Arbitrator
+### Arbitrator
 
 * Chooses winner based on **QoS Scalar**:
 
@@ -131,13 +131,13 @@ flowchart TB
   $$
 * Performs *post-hoc* guardrail filters (toxicity, PII).
 
-### 3.8 Warm Response Cache
+### Warm Response Cache
 
 * Redis *sharded by prompt hash*;
 * **TTL** = 5 min (high duplicate hit for agent chains).
 * **Co-located** with Router to avoid cross-AZ hop.
 
-### 3.9 Observability & SLOs
+### Observability and SLOs
 
 | Layer            | Metric            | SLO/Alert             |
 | ---------------- | ----------------- | --------------------- |
@@ -151,7 +151,7 @@ Stack: **OpenTelemetry → OTLP → ClickHouse** (fast tail), **Grafana + Alertm
 
 ---
 
-## 4 . Data Flows
+## Data Flows
 
 1. **Request** lands at nearest POP (Anycast) → auth, quota verified.
 2. **Normalizer** tags modality & pushes to **Router** (same region).
@@ -164,7 +164,7 @@ Stack: **OpenTelemetry → OTLP → ClickHouse** (fast tail), **Grafana + Alertm
 
 ---
 
-## 5 . Consistency & Freshness
+## Consistency and Freshness
 
 * **Model Metrics**: Slack 10-15 s acceptable; Redis update by Kafka → Materialized-View → Redis replicator.
 * **Config Pushes** (new model, cost change): via **Envoy xDS** stream, propagated < 5 s.
@@ -172,7 +172,7 @@ Stack: **OpenTelemetry → OTLP → ClickHouse** (fast tail), **Grafana + Alertm
 
 ---
 
-## 6 . Scaling & Cost Control
+## Scaling and Cost Control
 
 | Plane          | Strategy                                                                     |
 | -------------- | ---------------------------------------------------------------------------- |
@@ -185,7 +185,7 @@ Stack: **OpenTelemetry → OTLP → ClickHouse** (fast tail), **Grafana + Alertm
 
 ---
 
-## 7 . API Contract (abridged)
+## API Contract (abridged)
 
 ```http
 POST /v1/route
@@ -214,7 +214,7 @@ X-Routing-Latency: 41
 
 ---
 
-## 8 . Design Choices vs Alternatives
+## Design Choices vs Alternatives
 
 | Decision           | Picked                 | Rejected         | Why                                                                     |
 | ------------------ | ---------------------- | ---------------- | ----------------------------------------------------------------------- |
@@ -226,7 +226,7 @@ X-Routing-Latency: 41
 
 ---
 
-## 9 . Common Follow-Up Q\&A
+## Common Follow-Up Q&A
 
 <details>
 <summary>🔧 How would you add *New Model X* with unknown latency?</summary>
@@ -269,6 +269,6 @@ X-Routing-Latency: 41
 
 ---
 
-## 10 . Conclusion
+## Conclusion
 
 This architecture keeps **median router overhead \~40 ms**, supports agent-scale parallelism, offers dial-a-trade-off QoS, and cleanly extends to private/VPC deployments—matching Not Diamond’s multi-model mission while staying cost-aware and observability-first.

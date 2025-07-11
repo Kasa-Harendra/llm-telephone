@@ -4,7 +4,7 @@
 
 ---
 
-## 0 . Requirements & Non-Negotiables
+## Requirements and Non-Negotiables
 
 | Axis | Hard Constraint | Rationale |
 |------|-----------------|-----------|
@@ -18,7 +18,7 @@
 
 ---
 
-## 1 . Evolution Path
+## Evolution Path
 
 | Stage | Goal | Added Complexity | When to Move |
 |-------|------|------------------|--------------|
@@ -29,7 +29,7 @@
 
 ---
 
-## 2 . High-Level Architecture (v2 GA)
+## High-Level Architecture
 
 ```mermaid
 flowchart TB
@@ -40,11 +40,11 @@ flowchart TB
   RTE -->|cache hit| RESP
   RTE -->|miss| CPL(Compiler Shard)
   CPL --> PGUE(Prompt Glue Engine)
-  PGUE --> CFG[Compiled Prompt + Metadata]
+  PGUE --> CFG[Compiled Prompt and Metadata]
   CFG --> CDN[Prompt-Cache (Redis)]
   CFG --> RESP(Return to Router/Caller)
   CPL -. metrics .-> METRICS
-  METRICS --> OBS[OTel → ClickHouse + Grafana]
+  METRICS --> OBS[OTel → ClickHouse and Grafana]
   CPL -. async .-> CTL(Control Plane & DSL Registry S3)
   CTL --> CPL
 ```
@@ -53,22 +53,22 @@ flowchart TB
 
 ---
 
-## 3 . Component Deep-Dive
+## Component Deep-Dive
 
-### 3.1 API Gateway & Normalizer
+### API Gateway and Normalizer
 
 * **Anycast IP + TLS 1.3** — directs client to nearest POP.
 * JWT / HMAC + per-tenant rate limit *before* leaving POP.
 * Detect modality; strip PII if data-retention = zero.
 
-### 3.2 Router
+### Router
 
 * Fast decision:
 
   * **If target = “openai-gpt-4o”** and template already optimal → bypass compiler.
   * Else compute `cacheKey = sha256(prompt ⨉ targetModel ⨉ DSLVersion)`; lookup Redis (1 ms).
 
-### 3.3 Compiler-Shard (stateless)
+### Compiler-Shard (stateless)
 
 * **Phases**
 
@@ -82,26 +82,26 @@ flowchart TB
 
 * **Hot-reload**: watches S3 version manifest via **ETag** polling; zero-copy swap.
 
-### 3.4 Prompt Glue Engine (PGE)
+### Prompt Glue Engine (PGE)
 
 * Houses **model-specific helpers**:
 
   * `format_as_chat()`, `apply_role_prefix()`, `vision-json()`, etc.
 * Why separated? Minimizes compile-time branching; easier to stub for unit tests.
 
-### 3.5 Prompt-Cache (Redis Cluster)
+### Prompt-Cache (Redis Cluster)
 
 * Co-located with compiler region to avoid cross-AZ hop.
 * **TTL** 10 min default; 0 for privacy-sensitive tenants.
 * Key contains `DSLVersion` so template updates auto-invalidate.
 
-### 3.6 DSL Registry & Control Plane
+### DSL Registry and Control Plane
 
 * **DSL Repo** in Git + CI triggers **OpenAPI-derived JSON schema** generation.
 * Successful merge → push to S3 `dsl-bucket/v{semver}/`.
 * **Control Plane** sends gRPC `ReloadRequest{version}` to compiler shards (rolling).
 
-### 3.7 Observability / SLOs
+### Observability / SLOs
 
 | Metric               | SLO      | Alert              |
 | -------------------- | -------- | ------------------ |
@@ -111,7 +111,7 @@ flowchart TB
 
 ---
 
-## 4 . Template DSL
+## Template DSL
 
 ```dsl
 template "generic-chat" for all {
@@ -146,7 +146,7 @@ Compiler requires **semver** in request header; default = latest *compatible*.
 
 ---
 
-## 5 . A/B Evaluation Loop
+## A/B Evaluation Loop
 
 1. **Canary** 1 % traffic routes to **candidate template** via feature-flag.
 2. **Judge LLM** (e.g., `gpt-4o-mini`) scores *candidate vs control* on eval set.
@@ -158,7 +158,7 @@ Pipeline automated in **Argo Workflows**; artifacts stored in MinIO.
 
 ---
 
-## 6 . Rollout / Rollback Safety
+## Rollout / Rollback Safety
 
 | Step               | Mechanism                                                                       |
 | ------------------ | ------------------------------------------------------------------------------- |
@@ -170,7 +170,7 @@ Pipeline automated in **Argo Workflows**; artifacts stored in MinIO.
 
 ---
 
-## 7 . Zero-Downtime Deployment Technique
+## Zero-Downtime Deployment Technique
 
 * Blue/Green **K8s Deployment** with **Envoy** sidecars.
 * New pods warm **Redis local cache** via *preStop* drain.
@@ -179,7 +179,7 @@ Pipeline automated in **Argo Workflows**; artifacts stored in MinIO.
 
 ---
 
-## 8 . Why These Choices?
+## Why These Choices?
 
 | Decision             | Picked        | Alternatives     | Rationale                                |
 | -------------------- | ------------- | ---------------- | ---------------------------------------- |
@@ -192,7 +192,7 @@ Pipeline automated in **Argo Workflows**; artifacts stored in MinIO.
 
 ---
 
-## 9 . Follow-Up Q\&A
+## Follow-Up Q&A
 
 <details>
 <summary>🔄 How to support *vendor-owned* templates (OpenAI “tools”)?</summary>
@@ -231,6 +231,6 @@ Pipeline automated in **Argo Workflows**; artifacts stored in MinIO.
 
 ---
 
-## 10 . Conclusion
+## Conclusion
 
 This design compiles user prompts into model-optimal syntax **deterministically**, **safely**, and **fast**, while giving Not Diamond the levers to A/B iterate, roll back instantly, and ship new DSL grammars without downtime—all under stringent enterprise latency and compliance requirements.

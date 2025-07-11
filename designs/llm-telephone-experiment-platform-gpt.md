@@ -4,7 +4,7 @@
 
 ---
 
-## 1  Core Requirements
+## Core Requirements
 
 | Axis | Target |
 |------|--------|
@@ -18,12 +18,12 @@
 
 ---
 
-## 2  System Overview
+## System Overview
 
 ```mermaid
 flowchart TB
   subgraph "Control Plane"
-    UI[Experiment UI<br/>+ CLI] --> CFG[Config API]
+    UI[Experiment UI<br/>and CLI] --> CFG[Config API]
     CFG --> ETC[etcd / Consul (config store)]
     ETC --> SCH[Experiment Scheduler]
   end
@@ -40,11 +40,11 @@ flowchart TB
   RQ --> PAR[Parquet Writer]
   PAR --> S3[S3 / Object Store]
   S3 --> CH[ClickHouse Cluster<br/>(analytics)]
-  CH --> API[GraphQL + REST API]
+  CH --> API[GraphQL and REST API]
   API --> FE[React Dashboard]
 
   subgraph "Observability"
-    W1 -. metrics .-> PROM[Prom + Grafana]
+    W1 -. metrics .-> PROM[Prom and Grafana]
     SCH -.-> PROM
     API -.-> PROM
   end
@@ -52,9 +52,9 @@ flowchart TB
 
 ---
 
-## 3  Control Plane
+## Control Plane
 
-### 3.1 Experiment Definition (YAML)
+### Experiment Definition (YAML)
 
 ```yaml
 id: "tx2code_2025Q3"
@@ -78,7 +78,7 @@ priority: high
 *Stored in Git → CI checks → POST to **Config API** → versioned in **etcd** (key `/experiments/<id>/<semver>`).*
 *Why etcd?* Fast watch streams; atomic compare-and-swap for live edits.
 
-### 3.2 Scheduler
+### Scheduler
 
 * Watches `/experiments/*` for new or updated configs.
 * Calculates total chains = `|seeds| × daily_repeats`.
@@ -87,7 +87,7 @@ priority: high
 
 ---
 
-## 4  Worker Execution Model
+## Worker Execution Model
 
 | Step | Action                                                        | Notes                            |
 | ---- | ------------------------------------------------------------- | -------------------------------- |
@@ -110,7 +110,7 @@ priority: high
 
 ---
 
-## 5  Result Materialization Path
+## Result Materialization Path
 
 1. **Redis Stream Consumer** (`parquet-sink`) reads partials in micro-batches (5 s or 10 k records).
 2. Writes **Parquet** files to `/experiments/<id>/date=YYYY-MM-DD/hour=HH/*.parquet` on **S3**.
@@ -123,9 +123,9 @@ priority: high
 
 ---
 
-## 6  Analytics & Query Layer
+## Analytics and Query Layer
 
-### 6.1 Schema
+### Schema
 
 ```sql
 CREATE TABLE chains
@@ -146,7 +146,7 @@ ORDER BY (experiment_id, chain_id, hop);
 
 *Indexes on `(experiment_id, hop)` to serve common aggregates.*
 
-### 6.2 Pre-Aggregated Views
+### Pre-Aggregated Views
 
 | View           | Purpose                                         |
 | -------------- | ----------------------------------------------- |
@@ -156,7 +156,7 @@ ORDER BY (experiment_id, chain_id, hop);
 
 Materialized every 2 min via ClickHouse **materialized view** + **TumblingWindow**.
 
-### 6.3 API
+### API
 
 * **GraphQL** for flexible analytics (`hopRange`, `mode`, `modelFilter`).
 * **REST** shortcuts:
@@ -168,7 +168,7 @@ Materialized every 2 min via ClickHouse **materialized view** + **TumblingWindow
 
 ---
 
-## 7  Mitigating Write-Heavy vs Read-Heavy Contention
+## Mitigating Write-Heavy vs Read-Heavy Contention
 
 1. **Staging → Bulk insert** pattern (Parquet → hourly batches) avoids row-by-row writes.
 2. **ClickHouse hot/cold tiering**:
@@ -181,7 +181,7 @@ Materialized every 2 min via ClickHouse **materialized view** + **TumblingWindow
 
 ---
 
-## 8  Cost Controls
+## Cost Controls
 
 | Lever                   | Detail                                                                    |
 | ----------------------- | ------------------------------------------------------------------------- |
@@ -193,7 +193,7 @@ Materialized every 2 min via ClickHouse **materialized view** + **TumblingWindow
 
 ---
 
-## 9  Design Choices vs Alternatives
+## Design Choices vs Alternatives
 
 | Area               | Picked                                       | Alternative      | Reason                                   |
 | ------------------ | -------------------------------------------- | ---------------- | ---------------------------------------- |
@@ -206,7 +206,7 @@ Materialized every 2 min via ClickHouse **materialized view** + **TumblingWindow
 
 ---
 
-## 10  Anticipated Follow-Up Discussion
+## Anticipated Follow-Up Discussion
 
 <details>
 <summary>🔄 *How to rotate model pool daily?*</summary>
@@ -234,6 +234,6 @@ Materialized every 2 min via ClickHouse **materialized view** + **TumblingWindow
 
 ---
 
-## 11  Conclusion
+## Conclusion
 
 The proposed platform separates *control* (etcd + scheduler) from *data* (Kafka → Redis → Parquet → ClickHouse), enabling massive write throughput without throttling interactive reads, while staying cost-efficient and fault-tolerant—perfectly aligned with Not Diamond’s need for rapid experiment iteration at LLM scale.

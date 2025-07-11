@@ -4,7 +4,7 @@
 
 ---
 
-## 1  Baseline Requirements & Non-Negotiables
+## Baseline Requirements and Non-Negotiables
 
 | Axis | Target |
 |------|--------|
@@ -18,7 +18,7 @@
 
 ---
 
-## 2  System Evolution (why we don’t jump to hyperscale day 1)
+## System Evolution
 
 | Stage | Key Goals | What’s Added |
 |-------|-----------|--------------|
@@ -29,7 +29,7 @@
 
 ---
 
-## 3  High-Level Architecture (v2 GA)
+## High-Level Architecture
 
 ```mermaid
 flowchart TB
@@ -57,27 +57,27 @@ flowchart TB
   CH --> API(Leaderboard API Gateway)
   API --> FE[Dashboard SPA]
 
-  M --> OBS[Grafana + Alerting]
+  M --> OBS[Grafana and Alerting]
 ```
 
 ---
 
-## 4  Component Deep Dives
+## Component Deep Dives
 
-### 4.1 Model Detector Cron
+### Model Detector Cron
 
 * **Trigger** : every 10 min; hits Hugging Face `/api/models` diff + OpenRouter `/models` JSON diff.
 * **Output** : `{model_id, sha256_revision, published_at, tags, requires_gpu}` → Kafka `model_updates`.
 * **Why cron not webhook?** HF/OpenRouter lack reliable webhooks; polling is idempotent & simple.
 
-### 4.2 Eval Scheduler & Planner
+### Eval Scheduler and Planner
 
 * Reads `model_updates`, cartesian-joins with active **Dataset Registry** (Snowflake table) to create **eval plan** rows.
 * Cost model (= tokens × \$ / limitation) bins jobs into *CPU* vs *GPU* and picks **batch size** to saturate GPUs.
 * Pushes indivisible jobs into **Redis Streams** (low-latency, fan-out) with `XADD`.
 * Maintains *back-pressure* by reading cluster usage via K8s Metrics API; pauses if GPU > 90 % or ClickHouse ingest lag > 5 min.
 
-### 4.3 Worker Pods
+### Worker Pods
 
 | Type           | Image                    | Responsibility                                         |
 | -------------- | ------------------------ | ------------------------------------------------------ |
@@ -88,20 +88,20 @@ flowchart TB
 * **Argo Workflows** generates `Job` CRDs; **Karpenter/KEDA** autoscales node groups and pod counts separately.
 * **Spot GPU pooling**: On AWS we use `g5`, `g6`, `a10g` spot, fall back to on-demand if queue SLA threatened.
 
-### 4.4 Result Sink
+### Result Sink
 
 * Workers POST to gRPC-stream `ResultSink` → writes to **ClickHouse STAGING** (MergeTree) using dedupe key `(model_id, dataset_id, shard_id)`.
 * On shard completion, a **Materialized View** rolls up shard-scores → final model-dataset score row.
 * Sink emits `result_ready` to Kafka for judge scoring.
 
-### 4.5 Judge LLM Pool
+### Judge LLM Pool
 
 * Micro-service hitting **GPT-4o-mini** via OpenRouter with deterministic system prompt.
 * For each result: generates JSON `{score:1-10, reasoning}`.
 * Writes back to `judge_scores` table (also ClickHouse) with foreign-key to raw outputs (for audit).
 * **Batching**: groups 32 comparisons per OpenRouter call (function-call mode) → cost drop 40 %.
 
-### 4.6 ClickHouse Cluster (Analytical + Serving)
+### ClickHouse Cluster (Analytical and Serving)
 
 * Cluster of 3 replicas × 2 shards; zstd compression; Tiered storage (hot SSD → S3).
 * Primary table partitions by `toYYYYMM(upload_time)`.
@@ -111,7 +111,7 @@ flowchart TB
   * **`trend_mv`** (7-day rolling Δ).
 * **Why ClickHouse?** Handles > 150 k inserts/s, millisecond percentile queries.
 
-### 4.7 Leaderboard API
+### Leaderboard API
 
 * **FastAPI** behind CloudFront Anycast.
 * Common endpoints:
@@ -121,13 +121,13 @@ flowchart TB
 * Cache layer: **CloudFront + Origin Shield** 30 s TTL (refresh on ClickHouse Δ timestamp header).
 * Auth: Public read; internal write via mTLS.
 
-### 4.8 Dashboard SPA
+### Dashboard SPA
 
 * React + ECharts; pulls from same API; embeds Grafana iframe for cluster health.
 
 ---
 
-## 5  Warehouse Schema (Core Tables)
+## Warehouse Schema (Core Tables)
 
 ```sql
 CREATE TABLE eval_raw (
@@ -160,7 +160,7 @@ CREATE TABLE eval_scores (
 
 ---
 
-## 6  Data Freshness & SLAs
+## Data Freshness and SLAs
 
 | Pipeline Segment                | Time Budget                                  |
 | ------------------------------- | -------------------------------------------- |
@@ -175,7 +175,7 @@ CREATE TABLE eval_scores (
 
 ---
 
-## 7  Cost-Containment Tactics
+## Cost-Containment Tactics
 
 1. **Spot Instances First** – GPU pool chooses cheapest `instance-type × AZ` under SLA.
 2. **Dynamic Batch Size** – Scheduler bins prompts to maximise `tokens/sec/GPU`.
@@ -186,7 +186,7 @@ CREATE TABLE eval_scores (
 
 ---
 
-## 8  Design Choices vs Alternatives
+## Design Choices vs Alternatives
 
 | Area            | Picked              | Not Picked         | Reason                                                        |
 | --------------- | ------------------- | ------------------ | ------------------------------------------------------------- |
@@ -199,7 +199,7 @@ CREATE TABLE eval_scores (
 
 ---
 
-## 9  Follow-Up Q\&A (anticipated)
+## Follow-Up Q&A
 
 <details>
 <summary>🔄 *How do we handle dataset versioning?*</summary>
@@ -238,6 +238,6 @@ CREATE TABLE eval_scores (
 
 ---
 
-## 10  Conclusion
+## Conclusion
 
 The proposed harness discovers, evaluates, judges, and surfaces LLM performance **continuously**, achieving 2-hour freshness and sub-second leaderboard queries while capping blended cost at <\$0.08 per model–dataset pair—scalable, reproducible, and enterprise-ready.
