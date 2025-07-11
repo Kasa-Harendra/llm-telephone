@@ -1,10 +1,10 @@
-# designs/continuous-llm-benchmarking-harness-gpt.md
+# Continuous LLM Benchmarking Harness: System Design
 
 *End-to-end architecture for automatically discovering, evaluating, and ranking new/updated LLMs on Hugging Face & OpenRouter at **million-scale model-dataset pairs per month**.*
 
 ---
 
-## Baseline Requirements and Non-Negotiables
+## P1: Problem Statement
 
 | Axis | Target |
 |------|--------|
@@ -18,7 +18,7 @@
 
 ---
 
-## System Evolution
+## P3: Architecture Evolution
 
 | Stage | Key Goals | What’s Added |
 |-------|-----------|--------------|
@@ -29,7 +29,7 @@
 
 ---
 
-## High-Level Architecture
+## P4: Detailed Architecture
 
 ```mermaid
 flowchart TB
@@ -62,7 +62,7 @@ flowchart TB
 
 ---
 
-## Component Deep Dives
+## P4: Detailed Architecture
 
 ### Model Detector Cron
 
@@ -175,7 +175,7 @@ CREATE TABLE eval_scores (
 
 ---
 
-## Cost-Containment Tactics
+## P9: Cost Optimization
 
 1. **Spot Instances First** – GPU pool chooses cheapest `instance-type × AZ` under SLA.
 2. **Dynamic Batch Size** – Scheduler bins prompts to maximise `tokens/sec/GPU`.
@@ -186,7 +186,7 @@ CREATE TABLE eval_scores (
 
 ---
 
-## Design Choices vs Alternatives
+## P8: Failure Handling and Resilience
 
 | Area            | Picked              | Not Picked         | Reason                                                        |
 | --------------- | ------------------- | ------------------ | ------------------------------------------------------------- |
@@ -199,7 +199,7 @@ CREATE TABLE eval_scores (
 
 ---
 
-## Follow-Up Q&A
+## P10: Follow-up Questions and Answers
 
 <details>
 <summary>🔄 *How do we handle dataset versioning?*</summary>

@@ -1,4 +1,4 @@
-# designs/llm-telephone-experiment-platform.md
+# LLM "Telephone-Game" Experiment Platform: System Design
 
 *Scalable platform that runs **hundreds of thousands** of “answer→question→answer…” degradation chains per day, across a rotating pool of models, and serves live analytics.*
 
@@ -24,7 +24,7 @@
 flowchart TB
   subgraph "Control Plane"
     UI[Experiment UI<br/>and CLI] --> CFG[Config API]
-    CFG --> ETC[etcd / Consul (config store)]
+    CFG --> ETC[etcd / Consul config store]
     ETC --> SCH[Experiment Scheduler]
   end
 
@@ -193,7 +193,7 @@ Materialized every 2 min via ClickHouse **materialized view** + **TumblingWindow
 
 ---
 
-## Design Choices vs Alternatives
+## P8: Failure Handling and Resilience
 
 | Area               | Picked                                       | Alternative      | Reason                                   |
 | ------------------ | -------------------------------------------- | ---------------- | ---------------------------------------- |

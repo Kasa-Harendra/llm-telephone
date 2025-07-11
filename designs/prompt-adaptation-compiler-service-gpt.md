@@ -1,4 +1,4 @@
-# Prompt-Adaptation Compiler Service — Full System Design
+# Prompt-Adaptation Compiler Service: System Design
 
 *A single backend that **rewrites user prompts into the optimal syntax for a requested LLM** (OpenAI, Claude, Mistral, Gemini, etc.). 40-minute whiteboard answer.*
 
@@ -29,7 +29,7 @@
 
 ---
 
-## High-Level Architecture
+## P4: Detailed Architecture
 
 ```mermaid
 flowchart TB
@@ -41,7 +41,7 @@ flowchart TB
   RTE -->|miss| CPL(Compiler Shard)
   CPL --> PGUE(Prompt Glue Engine)
   PGUE --> CFG[Compiled Prompt and Metadata]
-  CFG --> CDN[Prompt-Cache (Redis)]
+  CFG --> CDN[Prompt-Cache Redis]
   CFG --> RESP(Return to Router/Caller)
   CPL -. metrics .-> METRICS
   METRICS --> OBS[OTel → ClickHouse and Grafana]
@@ -192,7 +192,7 @@ Pipeline automated in **Argo Workflows**; artifacts stored in MinIO.
 
 ---
 
-## Follow-Up Q&A
+## P10: Follow-up Questions and Answers
 
 <details>
 <summary>🔄 How to support *vendor-owned* templates (OpenAI “tools”)?</summary>

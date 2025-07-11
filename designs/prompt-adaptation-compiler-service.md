@@ -6,7 +6,7 @@ Modern AI applications need to interact with multiple LLM providers (OpenAI, Cla
 
 We need a service that automatically transforms a single canonical prompt into the optimal format for any target model while maintaining semantic equivalence and maximizing performance.
 
-## Requirements Analysis
+## P2: Requirements Analysis
 
 ### Functional Requirements
 - Transform prompts from canonical format to model-specific syntax
@@ -25,7 +25,7 @@ We need a service that automatically transforms a single canonical prompt into t
 - **Scalability**: Horizontal scaling with linear performance
 - **Observability**: Full request tracing and metrics
 
-## Architecture Evolution
+## P3: Architecture Evolution
 
 ### Phase 1: Basic Transformation Engine
 
@@ -166,7 +166,7 @@ graph TD
 - Cost-aware transformations (prefer cheaper models when possible)
 - Caching of frequently used transformations
 
-## Detailed Architecture
+## P4: Detailed Architecture
 
 ### Core Components
 
@@ -445,7 +445,7 @@ graph TD
 - Template compilation failures > 5% for 2 minutes
 - A/B test variant performance degradation > 20%
 
-## Scaling Strategy
+## P5: Scaling Strategy
 
 ### Horizontal Scaling
 
@@ -490,7 +490,7 @@ graph TD
 - TTL-based expiration for stale data
 - Background refresh for hot templates
 
-## Security Considerations
+## P7: Security Considerations
 
 ### Authentication and Authorization
 
@@ -539,7 +539,7 @@ graph TD
 - Budget alerts and automatic throttling
 - Cost-aware template selection
 
-## Follow-up Questions and Answers
+## P10: Follow-up Questions and Answers
 
 ### Q: How do you handle model-specific quirks and edge cases?
 

@@ -13,7 +13,7 @@ Enterprises need secure, compliant access to external LLM providers while mainta
 - **Self-hosted**: Deployable within customer VPC infrastructure
 - **Upgrade Strategy**: Zero-downtime updates and rollbacks
 
-## Requirements Analysis
+## P2: Requirements Analysis
 
 ### Functional Requirements
 - **Proxy Functionality**: Route requests to external LLM providers (OpenAI, Claude, Gemini, etc.)
@@ -34,7 +34,7 @@ Enterprises need secure, compliant access to external LLM providers while mainta
 - **Compliance**: SOC-2 Type II, GDPR, HIPAA ready
 - **Cost Efficiency**: Minimal resource overhead and operational costs
 
-## Architecture Evolution
+## P3: Architecture Evolution
 
 ### Phase 1: Basic Proxy with Authentication
 
@@ -305,7 +305,7 @@ graph TD
 
 **Why five-nines availability?** Enterprise customers require maximum uptime for critical AI workloads.
 
-## Detailed Architecture
+## P4: Detailed Architecture
 
 ### Core Components
 
@@ -717,7 +717,7 @@ graph TD
 
 **Why zero-downtime upgrades?** Enterprise customers cannot tolerate service interruptions.
 
-## Data Architecture
+## P5: Scaling Strategy
 
 ### Storage Schema
 
@@ -825,7 +825,7 @@ graph TD
 
 **Why partitioning?** Improves query performance and enables horizontal scaling.
 
-## Scaling Strategy
+## P5: Scaling Strategy
 
 ### Horizontal Scaling
 
@@ -936,7 +936,7 @@ graph TD
 
 **Why data scaling?** Handles large volumes of usage and billing data efficiently.
 
-## Monitoring and Observability
+## P6: Monitoring and Observability
 
 ### Metrics and Alerting
 
@@ -1050,7 +1050,7 @@ graph TD
 
 **Why security-first?** Enterprise customers require enterprise-grade security.
 
-## Follow-up Questions and Answers
+## P10: Follow-up Questions and Answers
 
 ### Q1: How do you handle data residency requirements?
 

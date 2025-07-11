@@ -11,7 +11,7 @@ Design a globally distributed gateway that accepts text, code-generation, vision
 - **Objectives**: Configurable latency/cost/quality trade-offs
 - **Reliability**: Robust fallback behavior and observability
 
-## Requirements Analysis
+## P2: Requirements Analysis
 
 ### Functional Requirements
 - Multi-modal input processing (text, code, vision, audio)
@@ -29,7 +29,7 @@ Design a globally distributed gateway that accepts text, code-generation, vision
 - **Cost**: Optimize for cost efficiency
 - **Accuracy**: Maintain quality standards
 
-## Architecture Evolution
+## P3: Architecture Evolution
 
 ### Phase 1: Basic Single-Region Architecture
 
@@ -81,7 +81,7 @@ graph TB
     Gateway --> Preprocessor[Input Preprocessor]
     
     Preprocessor --> FeatureExtractor[Feature Extractor]
-    FeatureExtractor --> FeatureStore[(Real-time Feature Store)]
+    FeatureExtractor --> FeatureStoreReal-time Feature Store
     
     Preprocessor --> DecisionEngine[Decision Engine]
     DecisionEngine --> FeatureStore
@@ -167,8 +167,8 @@ graph TB
     end
     
     subgraph "Global Services"
-        GlobalFeatureStore[(Global Feature Store)]
-        GlobalModelRegistry[(Global Model Registry)]
+        GlobalFeatureStoreGlobal Feature Store
+        GlobalModelRegistryGlobal Model Registry
         GlobalMetrics[Global Metrics]
     end
     
@@ -205,11 +205,11 @@ graph TB
     
     Region --> Preprocessor[Input Preprocessor]
     Preprocessor --> FeatureExtractor[Feature Extractor]
-    FeatureExtractor --> FeatureStore[(Real-time Feature Store)]
+    FeatureExtractor --> FeatureStoreReal-time Feature Store
     
     Preprocessor --> DecisionEngine[Decision Engine]
     DecisionEngine --> FeatureStore
-    DecisionEngine --> ModelRegistry[(Model Registry)]
+    DecisionEngine --> ModelRegistryModel Registry
     DecisionEngine --> Cache[Warm Cache]
     
     DecisionEngine --> Router[Model Router]
@@ -282,9 +282,9 @@ graph TB
     DecisionEngine --> ObjectiveOptimizer[Objective Optimizer]
     DecisionEngine --> ConfidenceCalculator[Confidence Calculator]
     
-    ModelScorer --> ModelRegistry[(Model Registry)]
-    ObjectiveOptimizer --> ConfigStore[(Config Store)]
-    ConfidenceCalculator --> HistoricalData[(Historical Data)]
+    ModelScorer --> ModelRegistryModel Registry
+    ObjectiveOptimizer --> ConfigStoreConfig Store
+    ConfidenceCalculator --> HistoricalDataHistorical Data
     
     ModelScorer --> ScoredModels[Scored Models]
     ObjectiveOptimizer --> OptimizedSelection[Optimized Selection]
@@ -559,7 +559,7 @@ graph TB
 - Cache performance
 - Resource utilization
 
-## Scaling Strategy
+## P5: Scaling Strategy
 
 ### Horizontal Scaling
 
@@ -596,7 +596,7 @@ graph TB
     end
     
     subgraph "Global Services"
-        GlobalCache[(Global Cache)]
+        GlobalCacheGlobal Cache
         GlobalMetrics[Global Metrics]
         GlobalConfig[Global Config]
     end

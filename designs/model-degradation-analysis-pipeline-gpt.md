@@ -1,3 +1,5 @@
+# Model Degradation Analysis Pipeline: System Design
+
 *Massively parallel pipeline that examines **information loss** when text flows through *chains* or *pairs* of LLMs, surfaces real-time compatibility scores, and feeds routing engines with evidence-based model-pair recommendations.*
 
 ---

@@ -21,7 +21,7 @@ The system must process thousands of concurrent API calls, provide sub-100ms mod
 - **High Availability**: 99.9% uptime
 - **Multi-dimensional Analysis**: Query characteristics, provider performance, and cost optimization
 
-## Requirements Analysis
+## P2: Requirements Analysis
 
 ### Functional Requirements
 - **Performance Tracking**: Monitor latency, throughput, and availability for each provider
@@ -43,7 +43,7 @@ The system must process thousands of concurrent API calls, provide sub-100ms mod
 - **Cost Efficiency**: Minimize monitoring overhead
 - **Real-time**: Sub-second data freshness
 
-## Architecture Evolution
+## P3: Architecture Evolution
 
 ### Phase 1: Basic Performance Tracking
 
@@ -217,7 +217,7 @@ graph TD
 - **Optimization Algorithms**: Continuously optimize recommendations
 - **A/B Testing**: Test and validate recommendation strategies
 
-## Detailed Architecture
+## P4: Detailed Architecture
 
 ### Core Components
 
@@ -529,7 +529,7 @@ graph TD
 
 **Why multiple time windows?** Different metrics require different aggregation periods for optimal analysis.
 
-## Data Architecture
+## P5: Scaling Strategy
 
 ### Storage Schema
 
@@ -628,7 +628,7 @@ graph TD
 
 **Why partitioning?** Improves query performance and enables horizontal scaling.
 
-## Scaling Strategy
+## P5: Scaling Strategy
 
 ### Horizontal Scaling
 
@@ -739,7 +739,7 @@ graph TD
 
 **Why data scaling?** Handles large volumes of performance and recommendation data efficiently.
 
-## Monitoring and Observability
+## P6: Monitoring and Observability
 
 ### Metrics and Alerting
 
@@ -899,7 +899,7 @@ graph TD
 
 **Why query optimization?** Ensures sub-100ms response times even for complex queries.
 
-## Follow-up Questions and Answers
+## P10: Follow-up Questions and Answers
 
 ### Q1: How do you ensure sub-100ms response time for model recommendations?
 

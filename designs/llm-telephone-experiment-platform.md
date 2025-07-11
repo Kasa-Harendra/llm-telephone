@@ -10,7 +10,7 @@ The LLM "telephone game" experiment measures how information degrades as it pass
 
 We need a platform that can run hundreds of thousands of these experiments daily across a rotating pool of models, with near-real-time analytics and interactive querying capabilities. The system must handle write-heavy ingestion from experiment execution while providing read-heavy analytics without performance degradation.
 
-## Requirements Analysis
+## P2: Requirements Analysis
 
 ### Functional Requirements
 - Define and manage experiment configurations (chain length, model pools, prompts)
@@ -28,7 +28,7 @@ We need a platform that can run hundreds of thousands of these experiments daily
 - **Data Freshness**: <1 minute delay for analytics after experiment completion
 - **Cost Efficiency**: Optimize LLM API usage and infrastructure costs
 
-## Architecture Evolution
+## P3: Architecture Evolution
 
 ### Phase 1: Basic Experiment Execution
 
@@ -171,7 +171,7 @@ graph TD
 - **Cost Optimization**: Use region-specific pricing and spot instances
 - **Data Locality**: Store analytics close to execution for performance
 
-## Detailed Architecture
+## P4: Detailed Architecture
 
 ### Core Components
 
@@ -447,7 +447,7 @@ graph TD
 3. **Batch Processing**: Perform complex aggregations and analysis
 4. **Materialized Views**: Pre-compute common query patterns
 
-## Data Architecture
+## P5: Scaling Strategy
 
 ### Storage Schema
 
@@ -656,7 +656,7 @@ GROUP BY model_used
 ORDER BY avg_degradation DESC;
 ```
 
-## Scaling Strategy
+## P5: Scaling Strategy
 
 ### Horizontal Scaling
 
@@ -737,7 +737,7 @@ graph TD
 - **Index Optimization**: Create indexes for common queries
 - **Data Partitioning**: Partition data for efficient queries
 
-## Monitoring and Observability
+## P6: Monitoring and Observability
 
 ### Metrics and Alerting
 
@@ -781,7 +781,7 @@ graph TD
 - **Data Freshness**: Monitor delay between execution and analytics
 - **Cache Hit Rate**: Optimize query performance
 
-## Follow-up Questions and Answers
+## P10: Follow-up Questions and Answers
 
 ### Q: How do you handle experiment versioning and rollbacks?
 

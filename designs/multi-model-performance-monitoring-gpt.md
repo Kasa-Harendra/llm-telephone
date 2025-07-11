@@ -1,3 +1,5 @@
+# Multi-Model Performance Monitoring: System Design
+
 *A real-time monitoring and recommendation platform that ingests metrics from **millions of LLM calls/day**, computes live health signals for **100 + providers**, and returns **sub-100 ms** model recommendations under 99.9 % availability.*
 
 ---
@@ -21,7 +23,7 @@
 ```mermaid
 flowchart TB
   subgraph "Ingress Plane"
-    G1[Edge API GW<br/>(Anycast)] --> NORM[Request Normalizer]
+    G1[Edge API GW<br/>Anycast] --> NORM[Request Normalizer]
     NORM --> RANK[Realtime Recommender]
     RANK --> RESP[Best Model<br/>and Fallbacks]
   end

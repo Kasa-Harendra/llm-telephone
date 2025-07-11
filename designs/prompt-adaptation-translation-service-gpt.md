@@ -1,3 +1,5 @@
+# Prompt Adaptation and Translation Service: System Design
+
 *A backend service that **automatically rewrites prompts** from a *source* LLM style (e.g., GPT-4) into semantically consistent variants for **N target providers** (Claude, Gemini, Llama 3, etc.), while learning continually from user feedback, supporting batch migrations, and enabling A/B evaluation.*
 
 ---
@@ -16,7 +18,7 @@
 
 ---
 
-## 2  High-Level Architecture
+## P4: Detailed Architecture
 
 ```mermaid
 flowchart TB

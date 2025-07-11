@@ -1,3 +1,5 @@
+# Enterprise VPC Proxy with Usage-Based Billing: System Design
+
 *A **self-hostable, drop-in proxy** that enterprises run **inside their own VPC** to reach external LLM vendors while satisfying data-residency, SOC-2, rate-limit, and usage-based billing requirements—delivered as a Helm chart but operated by the customer’s infra team.*
 
 ---
@@ -8,8 +10,8 @@
 flowchart TB
   subgraph "Customer VPC (multi-AZ)"
     LB[AWS NLB and TLS termination]
-    LB --> ENVOY[Envoy Gateway<br/>(mTLS ↔ clients)]
-    ENVOY --> AUTHZ[AuthN / AuthZ<br/>(OPA + JWKS)]
+    LB --> ENVOY[Envoy Gateway<br/>mTLS to clients]
+    ENVOY --> AUTHZ[AuthN / AuthZ<br/>OPA + JWKS]
     AUTHZ --> RL[Rate-Limit Service Redis and Envoy filters]
     RL --> TOK[Tokenizer / Meter]
     TOK --> ROUTER[LLM Router policy and routing]
@@ -177,7 +179,7 @@ where price retrieved from VersionedPricing Table (upgradable via CRD)
 
 ---
 
-## Design Choices vs Alternatives
+## P8: Failure Handling and Resilience
 
 | Problem                 | Picked                   | Rejected           | Rationale                               |
 | ----------------------- | ------------------------ | ------------------ | --------------------------------------- |

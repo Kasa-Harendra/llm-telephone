@@ -10,7 +10,7 @@ The LLM ecosystem is rapidly evolving with new models being released daily on pl
 
 Manual evaluation is impossible at scale, and existing benchmarks become stale quickly. We need an automated system that continuously discovers, evaluates, and ranks models while providing real-time insights through APIs and dashboards.
 
-## Requirements Analysis
+## P2: Requirements Analysis
 
 ### Functional Requirements
 - Automatically detect new/updated models on Hugging Face and OpenRouter
@@ -30,7 +30,7 @@ Manual evaluation is impossible at scale, and existing benchmarks become stale q
 - **Cost Efficiency**: Optimize GPU/CPU usage and minimize evaluation costs
 - **Accuracy**: Reliable and consistent evaluation results
 
-## Architecture Evolution
+## P3: Architecture Evolution
 
 ### Phase 1: Basic Model Discovery and Evaluation
 
@@ -168,7 +168,7 @@ graph TD
 - **Resource optimization**: Distribute load across available resources
 - **Cost efficiency**: Use region-specific pricing and spot instances
 
-## Detailed Architecture
+## P4: Detailed Architecture
 
 ### Core Components
 
@@ -376,7 +376,7 @@ graph TD
 - **Confidence Scoring**: Assess reliability of judge decisions
 - **Bias Mitigation**: Use diverse judge models and prompt engineering
 
-## Data Architecture
+## P5: Scaling Strategy
 
 ### Time-Series Database Schema
 
@@ -583,7 +583,7 @@ GET  /v1/metrics/trends
 }
 ```
 
-## Cost Containment Strategies
+## P9: Cost Optimization
 
 ### Resource Optimization
 
@@ -645,7 +645,7 @@ graph TD
     end
 ```
 
-## Monitoring and Observability
+## P6: Monitoring and Observability
 
 ### Metrics and Alerting
 
@@ -688,7 +688,7 @@ graph TD
 - Cost per evaluation > 20% above average for 1 hour
 - API response time > 200ms for 5 minutes
 
-## Scaling Strategy
+## P5: Scaling Strategy
 
 ### Horizontal Scaling
 
@@ -747,7 +747,7 @@ graph TD
     end
 ```
 
-## Follow-up Questions and Answers
+## P10: Follow-up Questions and Answers
 
 ### Q: How do you handle model API rate limits and failures?
 

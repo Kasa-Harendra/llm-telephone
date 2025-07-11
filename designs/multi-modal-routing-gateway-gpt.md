@@ -1,4 +1,4 @@
-# Multi-Modal Routing Gateway — End-to-End System Design
+# Multi-Modal Routing Gateway: System Design
 
 *Target scenario: a single production service that can ingest **text, code-gen, vision, and audio** prompts and route each request to “the best” third-party model (LLM/LVM) given a latency ↔ cost ↔ quality objective while maintaining **≤ 60 ms median router overhead** and **thousands of concurrent QPS**.*
 
@@ -45,7 +45,7 @@
 
 ---
 
-## High-Level Architecture
+## P4: Detailed Architecture
 
 ```mermaid
 flowchart TB
@@ -57,7 +57,7 @@ flowchart TB
     FRT(Router Service) -->|features| FS[Real-Time Feature Store]
     FRT -->|candidate set| SEE(Speculative Exec Mgr)
     SEE -->|async| CONN[Model Connectors Pool]
-    CONN -->|responses| ARB{Arbitrator<br/>(QoS dial)}
+    CONN -->|responses| ARB{Arbitrator<br/>QoS dial}
     ARB --> CACHE[Warm Resp Cache Redis Co-Located]
     ARB --> MON[Metrics/Spans]
     CACHE --hit--> RESP[Return Best Answer]
@@ -214,7 +214,7 @@ X-Routing-Latency: 41
 
 ---
 
-## Design Choices vs Alternatives
+## P8: Failure Handling and Resilience
 
 | Decision           | Picked                 | Rejected         | Why                                                                     |
 | ------------------ | ---------------------- | ---------------- | ----------------------------------------------------------------------- |
