@@ -6,8 +6,8 @@ from two sources: the review email "llm-telephone: what to fix before renaming i
 **reproduced** were confirmed on 2026-10-20 by running the code in a clean environment
 (Python 3.13.16, fresh venv, stubbed LLM calls). The layout follows
 [checkOwners' `docs/ACTION_ITEMS.md`](https://github.com/smusali/checkOwners/blob/main/docs/ACTION_ITEMS.md).
-Each item is small enough to merge on its own and is written to be filed as one GitHub issue.
-No issues have been filed yet (K1).
+Each item is small enough to merge on its own and is filed as one GitHub issue. The Issue
+Index at the end links them all.
 
 echoChain is a fresh project with no users or watchers. The rename therefore needs no
 deprecation period, no compatibility shims, and no redirect plan.
@@ -20,6 +20,14 @@ deprecation period, no compatibility shims, and no redirect plan.
 - **Effort:** XS ≤ 1h, S ≤ 4h, M ≤ 2d, L ≤ 1w, XL > 1w.
 - **Convention:** every fix ships with a regression test in the G1 suite. The test reproduces
   the evidence quoted for that item.
+- **Issues:** each item is GitHub issue #2 to #66, titled `[ID] Title`. Each issue body
+  records the epic, priority, effort, milestone, dependencies, and the items it blocks.
+- **Labels:**
+  - `packaging`: the rename, packaging, and release work.
+  - `correctness`: anything that changes whether a reported number is right.
+  - `research`: study design, validation, results, and methodology.
+  - GitHub's defaults (`bug`, `enhancement`, `documentation`, `good first issue`,
+    `help wanted`) for the kind of work.
 
 | Epic | Theme | Items |
 |---|---|---|
@@ -33,7 +41,7 @@ deprecation period, no compatibility shims, and no redirect plan.
 | H | Security, privacy, and supply chain | H1-H3 |
 | I | Documentation and positioning | I1-I8 |
 | J | Results and the study | J1-J5 |
-| K | Community and governance | K1-K2 |
+| K | Community and governance | K1 |
 
 ## Order of Work
 
@@ -47,8 +55,8 @@ flowchart LR
 ```
 
 1. **Rename and package as echoChain.** This is Epic A, plus what 0.1.0 needs to install,
-   run, and describe itself honestly on PyPI: B1-B3, F5, G1, G3, G5, H1, I1, I2, I4-I7,
-   and K1.
+   run, and describe itself honestly on PyPI: B1-B3, F5, G1, G3, G5, H1, I1, I2, and
+   I4-I7.
 2. **Fix the judge.** Judge errors must never become scores, and questions must never be
    scored as answers (C1-C3).
 3. **Fix the design.** Break the model/phase confound and add control arms (D1, D2).
@@ -69,16 +77,16 @@ this plan renames first.
   and PyPI normalizes `echoChain` to `echochain` (PEP 503), so `pip install echochain`
   installs the same project.
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| A1 | Verify and secure the `echoChain` name | P0 | XS | None |
-| A2 | Rename the repository to `smusali/echoChain` and rewrite every stale reference | P0 | S | A1 |
-| A3 | Rename `llm_tel/` to `echochain/` and move the CLI into `echochain/cli.py` | P0 | S | A2 |
-| A4 | Add `pyproject.toml` with PEP 621 and PEP 639 metadata, real dependencies, and the `echochain` command | P0 | S | A3, B1 |
-| A5 | Single-source the version and expose `echochain --version` | P0 | XS | A4 |
-| A6 | Start `CHANGELOG.md` at `0.1.0` | P0 | XS | A5 |
-| A7 | Publish `0.1.0` through GitHub Actions with PyPI Trusted Publishing, TestPyPI first | P0 | S | A4, A5, A6, G5 |
-| A8 | Unify the commit author identity | P0 | XS | None |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| A1 | Verify and secure the `echoChain` name | P0 | XS | None | [#2](https://github.com/smusali/llm-telephone/issues/2) |
+| A2 | Rename the repository to `smusali/echoChain` and rewrite every stale reference | P0 | S | A1 | [#3](https://github.com/smusali/llm-telephone/issues/3) |
+| A3 | Rename `llm_tel/` to `echochain/` and move the CLI into `echochain/cli.py` | P0 | S | A2 | [#4](https://github.com/smusali/llm-telephone/issues/4) |
+| A4 | Add `pyproject.toml` with PEP 621 and PEP 639 metadata, real dependencies, and the `echochain` command | P0 | S | A3, B1 | [#5](https://github.com/smusali/llm-telephone/issues/5) |
+| A5 | Single-source the version and expose `echochain --version` | P0 | XS | A4 | [#6](https://github.com/smusali/llm-telephone/issues/6) |
+| A6 | Start `CHANGELOG.md` at `0.1.0` | P0 | XS | A5 | [#7](https://github.com/smusali/llm-telephone/issues/7) |
+| A7 | Publish `0.1.0` through GitHub Actions with PyPI Trusted Publishing, TestPyPI first | P0 | S | A4, A5, A6, G5 | [#8](https://github.com/smusali/llm-telephone/issues/8) |
+| A8 | Unify the commit author identity | P0 | XS | None | [#9](https://github.com/smusali/llm-telephone/issues/9) |
 
 ### A1. Verify and secure the `echoChain` name
 - **Evidence:**
@@ -214,14 +222,14 @@ this plan renames first.
 
 ## Epic B: Install and Runtime Correctness
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| B1 | Fix the broken fresh install: declare direct dependencies, bound major versions, and add a lock file | P0 | S | None |
-| B2 | Replace the retired models and add a model preflight check | P0 | S | B1 |
-| B3 | Read the API key lazily and fail with an actionable message | P0 | XS | None |
-| B4 | Use one pooled client with transient-only, jittered retries and a wall-clock deadline | P0 | S | B1 |
-| B5 | Return typed completions, and handle `None`, truncation, refusals, and `max_tokens` | P0 | S | B4 |
-| B6 | Pin OpenRouter provider routing and record which provider served each call | P1 | S | B5, F1 |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| B1 | Fix the broken fresh install: declare direct dependencies, bound major versions, and add a lock file | P0 | S | None | [#10](https://github.com/smusali/llm-telephone/issues/10) |
+| B2 | Replace the retired models and add a model preflight check | P0 | S | B1 | [#11](https://github.com/smusali/llm-telephone/issues/11) |
+| B3 | Read the API key lazily and fail with an actionable message | P0 | XS | None | [#12](https://github.com/smusali/llm-telephone/issues/12) |
+| B4 | Use one pooled client with transient-only, jittered retries and a wall-clock deadline | P0 | S | B1 | [#13](https://github.com/smusali/llm-telephone/issues/13) |
+| B5 | Return typed completions, and handle `None`, truncation, refusals, and `max_tokens` | P0 | S | B4 | [#14](https://github.com/smusali/llm-telephone/issues/14) |
+| B6 | Pin OpenRouter provider routing and record which provider served each call | P1 | S | B5, F1 | [#15](https://github.com/smusali/llm-telephone/issues/15) |
 
 ### B1. Fix the broken fresh install *(reproduced)*
 - **Evidence:**
@@ -346,17 +354,17 @@ this plan renames first.
 
 ## Epic C: Judge and Measurement Validity
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| C1 | Make judge failures return no score, so they never reach the metric | P0 | S | None |
-| C2 | Require strict structured judge output and validate its range | P0 | S | C1 |
-| C3 | Score answers against the seed answer, and give questions their own rubric | P0 | S | C1 |
-| C4 | Take independent judge samples and add a multi-family judge panel | P1 | S | C2, F1 |
-| C5 | Harden judge and generation prompts against instructions injected through chain text | P1 | S | C2 |
-| C6 | Use an anchored, versioned rubric stored in hashed prompt files | P1 | S | C3 |
-| C7 | Evaluate fidelity claim by claim | P1 | L | C2, C6, D7 |
-| C8 | Validate the judge against ≥ 50 human labels and a second judge | P1 | M | C6 |
-| C9 | Add deterministic baseline metrics that need no judge, plus attractor signals | P2 | M | E2 |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| C1 | Make judge failures return no score, so they never reach the metric | P0 | S | None | [#16](https://github.com/smusali/llm-telephone/issues/16) |
+| C2 | Require strict structured judge output and validate its range | P0 | S | C1 | [#17](https://github.com/smusali/llm-telephone/issues/17) |
+| C3 | Score answers against the seed answer, and give questions their own rubric | P0 | S | C1 | [#18](https://github.com/smusali/llm-telephone/issues/18) |
+| C4 | Take independent judge samples and add a multi-family judge panel | P1 | S | C2, F1 | [#19](https://github.com/smusali/llm-telephone/issues/19) |
+| C5 | Harden judge and generation prompts against instructions injected through chain text | P1 | S | C2 | [#20](https://github.com/smusali/llm-telephone/issues/20) |
+| C6 | Use an anchored, versioned rubric stored in hashed prompt files | P1 | S | C3 | [#21](https://github.com/smusali/llm-telephone/issues/21) |
+| C7 | Evaluate fidelity claim by claim | P1 | L | C2, C6, D7 | [#22](https://github.com/smusali/llm-telephone/issues/22) |
+| C8 | Validate the judge against ≥ 50 human labels and a second judge | P1 | M | C6 | [#23](https://github.com/smusali/llm-telephone/issues/23) |
+| C9 | Add deterministic baseline metrics that need no judge, plus attractor signals | P2 | M | E2 | [#24](https://github.com/smusali/llm-telephone/issues/24) |
 
 ### C1. Make judge failures return no score *(reproduced)*
 - **Evidence:**
@@ -491,15 +499,15 @@ this plan renames first.
 
 ## Epic D: Experimental Design
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| D1 | Break the model × phase confound with explicit rotation schedules | P0 | M | F1 |
-| D2 | Add control arms: same-model chain, identity round trip, and direct paraphrase | P0 | M | D1 |
-| D3 | Record per-step drift alongside cumulative drift | P1 | S | C3 |
-| D4 | Add repeats, record sampling parameters, and report confidence intervals | P1 | S | F1, E2 |
-| D5 | Replace the running-mean stop rule with a pre-registered rule, and record why each run ended | P0 | S | C1, C3 |
-| D6 | Analyze cycles-to-degradation as censored time-to-event data | P1 | S | D5, E2 |
-| D7 | Build a versioned corpus of at least ten seeds | P0 | S | None |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| D1 | Break the model × phase confound with explicit rotation schedules | P0 | M | F1 | [#25](https://github.com/smusali/llm-telephone/issues/25) |
+| D2 | Add control arms: same-model chain, identity round trip, and direct paraphrase | P0 | M | D1 | [#26](https://github.com/smusali/llm-telephone/issues/26) |
+| D3 | Record per-step drift alongside cumulative drift | P1 | S | C3 | [#27](https://github.com/smusali/llm-telephone/issues/27) |
+| D4 | Add repeats, record sampling parameters, and report confidence intervals | P1 | S | F1, E2 | [#28](https://github.com/smusali/llm-telephone/issues/28) |
+| D5 | Replace the running-mean stop rule with a pre-registered rule, and record why each run ended | P0 | S | C1, C3 | [#29](https://github.com/smusali/llm-telephone/issues/29) |
+| D6 | Analyze cycles-to-degradation as censored time-to-event data | P1 | S | D5, E2 | [#30](https://github.com/smusali/llm-telephone/issues/30) |
+| D7 | Build a versioned corpus of at least ten seeds | P0 | S | None | [#31](https://github.com/smusali/llm-telephone/issues/31) |
 
 ### D1. Break the model × phase confound *(reproduced)*
 - **Evidence:** There are two models, and the phases strictly alternate (`engine.py:11-15`),
@@ -592,15 +600,15 @@ this plan renames first.
 
 ## Epic E: Provenance, Persistence, and the Data Contract
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| E1 | Write a `manifest.json` for every run | P0 | M | B5 |
-| E2 | Make JSONL the versioned source of truth, with complete per-row fields | P0 | M | E1 |
-| E3 | Make run directories collision-free and traversal-safe, keyed by a run UUID | P0 | S | None |
-| E4 | Open every text file as UTF-8 | P0 | XS | None |
-| E5 | Drop the parallel CSV writer and derive CSV through `echochain export` | P1 | S | E2, F2 |
-| E6 | Add crash-safe run status, error reporting on stderr, and `--resume` | P1 | M | E1 |
-| E7 | Capture tokens and cost per call, and enforce a `--budget` cap | P0 | S | B5 |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| E1 | Write a `manifest.json` for every run | P0 | M | B5 | [#32](https://github.com/smusali/llm-telephone/issues/32) |
+| E2 | Make JSONL the versioned source of truth, with complete per-row fields | P0 | M | E1 | [#33](https://github.com/smusali/llm-telephone/issues/33) |
+| E3 | Make run directories collision-free and traversal-safe, keyed by a run UUID | P0 | S | None | [#34](https://github.com/smusali/llm-telephone/issues/34) |
+| E4 | Open every text file as UTF-8 | P0 | XS | None | [#35](https://github.com/smusali/llm-telephone/issues/35) |
+| E5 | Drop the parallel CSV writer and derive CSV through `echochain export` | P1 | S | E2, F2 | [#36](https://github.com/smusali/llm-telephone/issues/36) |
+| E6 | Add crash-safe run status, error reporting on stderr, and `--resume` | P1 | M | E1 | [#37](https://github.com/smusali/llm-telephone/issues/37) |
+| E7 | Capture tokens and cost per call, and enforce a `--budget` cap | P0 | S | B5 | [#38](https://github.com/smusali/llm-telephone/issues/38) |
 
 ### E1. Write a run manifest
 - **Evidence:** A run writes only `chain.csv` and `chain.jsonl`, with five fields
@@ -710,13 +718,13 @@ this plan renames first.
 
 ## Epic F: CLI and Configuration
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| F1 | Load a validated TOML experiment config, with flags overriding env, file, and defaults | P0 | M | B3 |
-| F2 | Build a real CLI: subcommands, batch runs, progress, and an honest final status | P0 | M | F1, A3 |
-| F3 | Document an exit-code contract | P0 | S | F2 |
-| F4 | Show the call count and estimated cost with `--dry-run` before any paid call | P0 | S | F1, B2 |
-| F5 | Fix or retire `scripts/run.sh` | P0 | XS | None |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| F1 | Load a validated TOML experiment config, with flags overriding env, file, and defaults | P0 | M | B3 | [#39](https://github.com/smusali/llm-telephone/issues/39) |
+| F2 | Build a real CLI: subcommands, batch runs, progress, and an honest final status | P0 | M | F1, A3 | [#40](https://github.com/smusali/llm-telephone/issues/40) |
+| F3 | Document an exit-code contract | P0 | S | F2 | [#41](https://github.com/smusali/llm-telephone/issues/41) |
+| F4 | Show the call count and estimated cost with `--dry-run` before any paid call | P0 | S | F1, B2 | [#42](https://github.com/smusali/llm-telephone/issues/42) |
+| F5 | Fix or retire `scripts/run.sh` | P0 | XS | None | [#43](https://github.com/smusali/llm-telephone/issues/43) |
 
 ### F1. Load a validated experiment config
 - **Evidence:**
@@ -792,14 +800,14 @@ this plan renames first.
 
 ## Epic G: Testing and Quality Assurance
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| G1 | Build an offline test suite around a fake chat client that can be injected | P0 | M | None |
-| G2 | Add tests that replay recorded responses, plus an opt-in live smoke test | P1 | M | G1, B4 |
-| G3 | Enforce Ruff, formatting, and type checking through pre-commit | P0 | S | None |
-| G4 | Enforce a coverage floor | P1 | XS | G1 |
-| G5 | Run CI on Python 3.11-3.15 across Linux, macOS, and Windows | P0 | S | G1, G3 |
-| G6 | Add property-based tests for the parser, path sanitizer, and schedule generator | P2 | S | G1 |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| G1 | Build an offline test suite around a fake chat client that can be injected | P0 | M | None | [#44](https://github.com/smusali/llm-telephone/issues/44) |
+| G2 | Add tests that replay recorded responses, plus an opt-in live smoke test | P1 | M | G1, B4 | [#45](https://github.com/smusali/llm-telephone/issues/45) |
+| G3 | Enforce Ruff, formatting, and type checking through pre-commit | P0 | S | None | [#46](https://github.com/smusali/llm-telephone/issues/46) |
+| G4 | Enforce a coverage floor | P1 | XS | G1 | [#47](https://github.com/smusali/llm-telephone/issues/47) |
+| G5 | Run CI on Python 3.11-3.15 across Linux, macOS, and Windows | P0 | S | G1, G3 | [#48](https://github.com/smusali/llm-telephone/issues/48) |
+| G6 | Add property-based tests for the parser, path sanitizer, and schedule generator | P2 | S | G1 | [#49](https://github.com/smusali/llm-telephone/issues/49) |
 
 ### G1. Build an offline test suite
 - **Evidence:** There are no tests. The "test" step in CONTRIBUTING is a live, paid run
@@ -857,11 +865,11 @@ this plan renames first.
 
 ## Epic H: Security, Privacy, and Supply Chain
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| H1 | Handle secrets safely: ignore `.env`, ship `.env.example`, and redact the key everywhere | P0 | XS | None |
-| H2 | Harden the supply chain with Dependabot, SHA-pinned actions, least-privilege workflows, and `pip-audit` | P1 | S | G5 |
-| H3 | Add `SECURITY.md` and a notice about the text sent to third-party providers | P1 | XS | B6 |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| H1 | Handle secrets safely: ignore `.env`, ship `.env.example`, and redact the key everywhere | P0 | XS | None | [#50](https://github.com/smusali/llm-telephone/issues/50) |
+| H2 | Harden the supply chain with Dependabot, SHA-pinned actions, least-privilege workflows, and `pip-audit` | P1 | S | G5 | [#51](https://github.com/smusali/llm-telephone/issues/51) |
+| H3 | Add `SECURITY.md` and a notice about the text sent to third-party providers | P1 | XS | B6 | [#52](https://github.com/smusali/llm-telephone/issues/52) |
 
 ### H1. Handle secrets safely
 - **Evidence:**
@@ -897,16 +905,16 @@ this plan renames first.
 
 ## Epic I: Documentation and Positioning
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| I1 | Make every README claim match the code, and list known issues | P0 | S | None |
-| I2 | Add a Related Work section that states the three differentiators | P0 | S | None |
-| I3 | Publish `METHODOLOGY.md` with limitations and threats to validity | P1 | M | C6, D1, D5 |
-| I4 | Turn `IMPROVEMENTS.md` into a `ROADMAP.md` keyed to these IDs, with a "not now" list | P0 | XS | None |
-| I5 | Reframe `INSTRUCTIONS.md` as the original brief, with a conformance table | P0 | S | None |
-| I6 | Move the `designs/` interview material out of the repository | P0 | S | None |
-| I7 | Rewrite `CONTRIBUTING.md` around offline tests and the packaged workflow | P1 | S | G1, G3, A4 |
-| I8 | Add `CITATION.cff` and archive every release with a DOI | P2 | XS | A7 |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| I1 | Make every README claim match the code, and list known issues | P0 | S | None | [#53](https://github.com/smusali/llm-telephone/issues/53) |
+| I2 | Add a Related Work section that states the three differentiators | P0 | S | None | [#54](https://github.com/smusali/llm-telephone/issues/54) |
+| I3 | Publish `METHODOLOGY.md` with limitations and threats to validity | P1 | M | C6, D1, D5 | [#55](https://github.com/smusali/llm-telephone/issues/55) |
+| I4 | Turn `IMPROVEMENTS.md` into a `ROADMAP.md` keyed to these IDs, with a "not now" list | P0 | XS | None | [#56](https://github.com/smusali/llm-telephone/issues/56) |
+| I5 | Reframe `INSTRUCTIONS.md` as the original brief, with a conformance table | P0 | S | None | [#57](https://github.com/smusali/llm-telephone/issues/57) |
+| I6 | Move the `designs/` interview material out of the repository | P0 | S | None | [#58](https://github.com/smusali/llm-telephone/issues/58) |
+| I7 | Rewrite `CONTRIBUTING.md` around offline tests and the packaged workflow | P1 | S | G1, G3, A4 | [#59](https://github.com/smusali/llm-telephone/issues/59) |
+| I8 | Add `CITATION.cff` and archive every release with a DOI | P2 | XS | A7 | [#60](https://github.com/smusali/llm-telephone/issues/60) |
 
 ### I1. Make README claims match the code
 - **Evidence:**
@@ -1030,13 +1038,13 @@ this plan renames first.
 
 ## Epic J: Results and the Study
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| J1 | Run a pilot: ten seeds, three arms, three repeats, one chart, and one paragraph | P0 | M | B2, C1, C3, D1, D2, D5, D7, E2 |
-| J2 | Write a deterministic analysis script (`echochain analyze`) | P1 | M | E2, D6 |
-| J3 | Pre-register the study design before the full run | P1 | S | C7, C8, D4 |
-| J4 | Run the full study, and publish the raw data, prompts, costs, and analysis | P1 | L | J2, J3 |
-| J5 | Write up the findings against related work | P2 | M | J4, I2 |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| J1 | Run a pilot: ten seeds, three arms, three repeats, one chart, and one paragraph | P0 | M | B2, C1, C3, D1, D2, D5, D7, E2 | [#61](https://github.com/smusali/llm-telephone/issues/61) |
+| J2 | Write a deterministic analysis script (`echochain analyze`) | P1 | M | E2, D6 | [#62](https://github.com/smusali/llm-telephone/issues/62) |
+| J3 | Pre-register the study design before the full run | P1 | S | C7, C8, D4 | [#63](https://github.com/smusali/llm-telephone/issues/63) |
+| J4 | Run the full study, and publish the raw data, prompts, costs, and analysis | P1 | L | J2, J3 | [#64](https://github.com/smusali/llm-telephone/issues/64) |
+| J5 | Write up the findings against related work | P2 | M | J4, I2 | [#65](https://github.com/smusali/llm-telephone/issues/65) |
 
 ### J1. Run a pilot experiment
 - **Evidence:**
@@ -1097,19 +1105,11 @@ this plan renames first.
 
 ## Epic K: Community and Governance
 
-| ID | Title | Priority | Effort | Depends on |
-|---|---|---|---|---|
-| K1 | File every item here as a GitHub issue, with labels and milestones | P1 | XS | None |
-| K2 | Add a code of conduct, issue and PR templates, and Discussions | P2 | XS | K1 |
+| ID | Title | Priority | Effort | Depends on | Issue |
+|---|---|---|---|---|---|
+| K1 | Add a code of conduct, issue and PR templates, and Discussions | P2 | XS | None | [#66](https://github.com/smusali/llm-telephone/issues/66) |
 
-### K1. File the issues
-- **Do:**
-  - Create one issue per ID, labeled `epic:A` through `epic:K` and `P0` through `P2`, and
-    assign it to the milestone from the release mapping below.
-  - Add an Issue column and an issue index to this file, as checkOwners does.
-- **Done when:** Every ID links to its issue.
-
-### K2. Add community files
+### K1. Add community files
 - **Do:**
   - Add a Contributor Covenant code of conduct.
   - Add issue forms for bugs and for questions about results.
@@ -1169,12 +1169,28 @@ Where this file departs from the review email, and why:
 
 | Milestone | Action items |
 |---|---|
-| `0.1.0`: rename and package | A1 · A2 · A3 · A4 · A5 · A6 · A7 · A8 · B1 · B2 · B3 · F5 · G1 · G3 · G5 · H1 · I1 · I2 · I4 · I5 · I6 · I7 · K1 |
+| `0.1.0`: rename and package | A1 · A2 · A3 · A4 · A5 · A6 · A7 · A8 · B1 · B2 · B3 · F5 · G1 · G3 · G5 · H1 · I1 · I2 · I4 · I5 · I6 · I7 |
 | `0.2.0`: correct measurement and a first result | B4 · B5 · C1 · C2 · C3 · D1 · D2 · D5 · D7 · E1 · E2 · E3 · E4 · E7 · F1 · F2 · F3 · F4 · J1 |
 | `0.3.0`: hardening | B6 · E5 · E6 · G4 · H2 · H3 |
 | `0.4.0`: measurement validity | C4 · C5 · C6 · C7 · C8 · D3 · D4 · D6 · G2 · I3 · J2 |
-| `0.5.0`: the study | C9 · G6 · I8 · J3 · J4 · K2 |
+| `0.5.0`: the study | C9 · G6 · I8 · J3 · J4 · K1 |
 | `1.0.0`: the contract | J5, plus a frozen v1 schema for manifests and rows (E1, E2), stable CLI flags and exit codes (F2, F3), and a written SemVer policy |
+
+## Issue Index
+
+| Epic | Issues |
+|---|---|
+| A: Rename and Package as echoChain | [A1 #2](https://github.com/smusali/llm-telephone/issues/2) · [A2 #3](https://github.com/smusali/llm-telephone/issues/3) · [A3 #4](https://github.com/smusali/llm-telephone/issues/4) · [A4 #5](https://github.com/smusali/llm-telephone/issues/5) · [A5 #6](https://github.com/smusali/llm-telephone/issues/6) · [A6 #7](https://github.com/smusali/llm-telephone/issues/7) · [A7 #8](https://github.com/smusali/llm-telephone/issues/8) · [A8 #9](https://github.com/smusali/llm-telephone/issues/9) |
+| B: Install and Runtime Correctness | [B1 #10](https://github.com/smusali/llm-telephone/issues/10) · [B2 #11](https://github.com/smusali/llm-telephone/issues/11) · [B3 #12](https://github.com/smusali/llm-telephone/issues/12) · [B4 #13](https://github.com/smusali/llm-telephone/issues/13) · [B5 #14](https://github.com/smusali/llm-telephone/issues/14) · [B6 #15](https://github.com/smusali/llm-telephone/issues/15) |
+| C: Judge and Measurement Validity | [C1 #16](https://github.com/smusali/llm-telephone/issues/16) · [C2 #17](https://github.com/smusali/llm-telephone/issues/17) · [C3 #18](https://github.com/smusali/llm-telephone/issues/18) · [C4 #19](https://github.com/smusali/llm-telephone/issues/19) · [C5 #20](https://github.com/smusali/llm-telephone/issues/20) · [C6 #21](https://github.com/smusali/llm-telephone/issues/21) · [C7 #22](https://github.com/smusali/llm-telephone/issues/22) · [C8 #23](https://github.com/smusali/llm-telephone/issues/23) · [C9 #24](https://github.com/smusali/llm-telephone/issues/24) |
+| D: Experimental Design | [D1 #25](https://github.com/smusali/llm-telephone/issues/25) · [D2 #26](https://github.com/smusali/llm-telephone/issues/26) · [D3 #27](https://github.com/smusali/llm-telephone/issues/27) · [D4 #28](https://github.com/smusali/llm-telephone/issues/28) · [D5 #29](https://github.com/smusali/llm-telephone/issues/29) · [D6 #30](https://github.com/smusali/llm-telephone/issues/30) · [D7 #31](https://github.com/smusali/llm-telephone/issues/31) |
+| E: Provenance, Persistence, and the Data Contract | [E1 #32](https://github.com/smusali/llm-telephone/issues/32) · [E2 #33](https://github.com/smusali/llm-telephone/issues/33) · [E3 #34](https://github.com/smusali/llm-telephone/issues/34) · [E4 #35](https://github.com/smusali/llm-telephone/issues/35) · [E5 #36](https://github.com/smusali/llm-telephone/issues/36) · [E6 #37](https://github.com/smusali/llm-telephone/issues/37) · [E7 #38](https://github.com/smusali/llm-telephone/issues/38) |
+| F: CLI and Configuration | [F1 #39](https://github.com/smusali/llm-telephone/issues/39) · [F2 #40](https://github.com/smusali/llm-telephone/issues/40) · [F3 #41](https://github.com/smusali/llm-telephone/issues/41) · [F4 #42](https://github.com/smusali/llm-telephone/issues/42) · [F5 #43](https://github.com/smusali/llm-telephone/issues/43) |
+| G: Testing and Quality Assurance | [G1 #44](https://github.com/smusali/llm-telephone/issues/44) · [G2 #45](https://github.com/smusali/llm-telephone/issues/45) · [G3 #46](https://github.com/smusali/llm-telephone/issues/46) · [G4 #47](https://github.com/smusali/llm-telephone/issues/47) · [G5 #48](https://github.com/smusali/llm-telephone/issues/48) · [G6 #49](https://github.com/smusali/llm-telephone/issues/49) |
+| H: Security, Privacy, and Supply Chain | [H1 #50](https://github.com/smusali/llm-telephone/issues/50) · [H2 #51](https://github.com/smusali/llm-telephone/issues/51) · [H3 #52](https://github.com/smusali/llm-telephone/issues/52) |
+| I: Documentation and Positioning | [I1 #53](https://github.com/smusali/llm-telephone/issues/53) · [I2 #54](https://github.com/smusali/llm-telephone/issues/54) · [I3 #55](https://github.com/smusali/llm-telephone/issues/55) · [I4 #56](https://github.com/smusali/llm-telephone/issues/56) · [I5 #57](https://github.com/smusali/llm-telephone/issues/57) · [I6 #58](https://github.com/smusali/llm-telephone/issues/58) · [I7 #59](https://github.com/smusali/llm-telephone/issues/59) · [I8 #60](https://github.com/smusali/llm-telephone/issues/60) |
+| J: Results and the Study | [J1 #61](https://github.com/smusali/llm-telephone/issues/61) · [J2 #62](https://github.com/smusali/llm-telephone/issues/62) · [J3 #63](https://github.com/smusali/llm-telephone/issues/63) · [J4 #64](https://github.com/smusali/llm-telephone/issues/64) · [J5 #65](https://github.com/smusali/llm-telephone/issues/65) |
+| K: Community and Governance | [K1 #66](https://github.com/smusali/llm-telephone/issues/66) |
 
 ## Critical Path
 
